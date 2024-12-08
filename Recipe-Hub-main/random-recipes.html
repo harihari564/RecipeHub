@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Meta tags, title, and CSS styles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Lemon:wght@400;700&display=swap" rel="stylesheet">
+    <title>Random Recipes - RecipeHub</title>
+
+    <!-- Add the Lodash library via CDN for shuffling -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+
+    <style>
+        /* CSS Styles Here */
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('background.jpg');
+            /* Add your background image URL here */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* Fix the background position */
+            font-family: Arial, sans-serif;
+            /* Use a suitable font family */
+            color: #333;
+            /* Text color for random recipes */
+        }
+        
+        .desktop {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            margin-top: 20px;
+        }
+        
+        .logo {
+            height: 100px;
+            width: 100px;
+            cursor: pointer;
+            /* Add a cursor pointer */
+        }
+        
+        h1 {
+            font-size: 36px;
+            font-family: "Lemon", sans-serif;
+            font-weight: 200;
+            margin-top: 20px;
+            color: #fff;
+            /* Change the title color to white */
+        }
+        
+        .random-recipes {
+            max-width: 90%;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            /* Center-align the recipe boxes with equal space between */
+        }
+        
+        .recipe-box {
+            position: relative;
+            /* Position for tooltip */
+            border-radius: 10px;
+            background: radial-gradient(221.92% 70.71% at 50% 50%, rgba(0, 0, 0, 0.50) 0%, #252525 100%);
+            padding: 20px;
+            margin-bottom: 20px;
+            /* Add margin to separate recipe boxes vertically */
+            flex: 0 0 calc(25% - 20px);
+            /* Calculate width for four boxes per row */
+            text-align: center;
+            font-family: "Comic Sans MS", sans-serif;
+            color: #fff;
+            max-width: 300px;
+            /* Reduce the size of the boxes */
+            transition: transform 0.2s ease-in-out;
+            /* Add transition effect for hover */
+            cursor: pointer;
+            /* Add cursor pointer */
+        }
+        
+        .recipe-box:hover {
+            transform: scale(1.05);
+            /* Increase the size of the box on hover */
+        }
+        
+        .recipe-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        /* Add styles for the "View Recipe" link */
+        
+        .recipe-link {
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            display: inline-block;
+            background-color: #F40058;
+            /* Background color for the link */
+            color: #fff;
+            /* Text color for the link */
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin-top: 10px;
+            /* Add margin to separate the link from the recipe title */
+        }
+        /* Change the background color on hover */
+        
+        .recipe-link:hover {
+            background-color: #AE03FF;
+            /* Change background color on hover */
+        }
+        
+        .recipe-image {
+            border-radius: 10px;
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+            /* Add margin to separate the image from the title */
+            cursor: pointer;
+            /* Add cursor pointer */
+        }
+        
+        .recipe-name {
+            font-weight: bold;
+        }
+        /* Style for the pop-up container */
+        
+        .popup-container {
+            display: none;
+            position: fixed;
+            background-color: #2f2f2f;
+            color: white;
+            border: 2px solid rgb(180, 180, 180);
+            border-radius: 10px;
+            z-index: 1;
+            width: 80%;
+            /* Set a fixed width for the popup */
+            max-height: 90%;
+            /* Set a maximum height for the popup */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            /* Add shadow to the popup */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Center the popup */
+            overflow: scroll;
+            /* Hide any overflowing content */
+        }
+        /* Hide scrollbar */
+        
+        .popup-container::-webkit-scrollbar {
+            width: 0;
+            /* Set the width to 0 to hide the scrollbar */
+        }
+        
+        .popup-box {
+            position: relative;
+        }
+        /* Style for the Mac title bar */
+        
+        .mac-title-bar {
+            background-color: #161618;
+            height: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            padding: 5px;
+        }
+        /* Style for the traffic light buttons */
+        
+        .traffic-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        
+        .traffic-light.red {
+            background-color: #FF5F56;
+        }
+        
+        .traffic-light.yellow {
+            background-color: #FFBD2E;
+        }
+        
+        .traffic-light.green {
+            background-color: #27C93F;
+        }
+        /* Style for the pop-up content */
+        
+        .popup-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .popup-image {
+            border-radius: 10px;
+            /* Rounded corners for the image */
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .recipe-name-popup {
+            font-weight: bold;
+            margin-top: 20px;
+            /* Add margin between image and title bar */
+        }
+        
+        .recipe-ingredients {
+            list-style-type: disc;
+            /* Use disc for bullet points */
+            text-align: left;
+            /* Center alignment for the ingredients list */
+            padding-left: 10px;
+            /* Add left padding for bullet points */
+        }
+        
+        .footer {
+            position: relative;
+            /* Position*/
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.50);
+            /* Set font color with opacity */
+            font-family: 'Montserrat', sans-serif;
+            /* Use Montserrat font */
+            font-size: small;
+            text-align: center;
+            padding: 10px;
+        }
+        /* Media Query for responsive design */
+        
+        @media screen and (max-width: 768px) {
+            .recipe-box {
+                flex: 0 0 calc(100% - 20px);
+                /* Calculate width for one box per row */
+            }
+        }
+        
+        @media screen and (min-width: 1200px) {
+            .recipe-box {
+                flex: 0 0 calc(33.3333% - 20px);
+                /* Calculate width for three boxes per row */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HTML Content Here -->
+
+    <div class="desktop">
+        <div class="header">
+            <img class="logo" alt="Logo" src="logo.png" onclick="redirectToHomepage()" />
+            <h1>RecipeHub</h1>
+        </div>
+
+        <!-- Section to Display Random Recipes -->
+        <div class="random-recipes" id="recipe-list">
+            <!-- Random recipes will be dynamically added here using JavaScript -->
+        </div>
+    </div>
+
+    <!-- Popup Container -->
+    <div id="popup-container" class="popup-container">
+        <div class="popup-box">
+            <div class="mac-title-bar">
+                <span class="traffic-light red" onclick="closePopup()"></span>
+                <span class="traffic-light yellow"></span>
+                <span class="traffic-light green"></span>
+            </div>
+
+            <div class="popup-content">
+                <img class="popup-image" alt="Recipe Image" src="">
+                <h2 class="recipe-name-popup"></h2>
+                <ul class="recipe-ingredients" id="popup-ingredients-list">
+                    <!-- Ingredients will be dynamically added here using JavaScript -->
+                </ul>
+                <a class="recipe-link" id="view-recipe-button" href="#" target="_blank">View Recipe</a>
+            </div>
+        </div>
+    </div>
+    <!-- Footer Section -->
+    <div class="footer">
+        &copy; <span id="currentYear"></span> RecipeHub | Harisankar M | All Rights Reserved
+    </div>
+
+    <!-- JavaScript to fetch and display random recipes -->
+    <script>
+        document.getElementById("currentYear").innerText = new Date().getFullYear();
+        // Function to shuffle an array randomly
+        function shuffleArray(array) {
+            let shuffledArray = [...array];
+            for (let i = shuffledArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            }
+            return shuffledArray;
+        }
+
+        // Function to fetch and display random recipes
+        function displayRandomRecipes() {
+            // Replace 'YOUR_APP_ID' and 'YOUR_APP_KEY' with your actual Edamam API credentials
+            const appId = '6d07bcac';
+            const appKey = '2af7e7e87610a515dba26a484c02cc07';
+
+            // Generate a timestamp for a unique request each time
+            const timestamp = Date.now();
+
+            // Define the number of random recipes you want to fetch
+            const numberOfRecipes = 100; // You can adjust this number as needed
+
+            // Build the API URL to fetch random recipes with a timestamp
+            const apiUrl = `https://api.edamam.com/search?q=random&app_id=${appId}&app_key=${appKey}&from=0&to=${numberOfRecipes}&timestamp=${timestamp}`;
+
+            // Get the recipe list container
+            const recipeList = document.getElementById('recipe-list');
+
+            // Fetch random recipes
+            fetch(apiUrl)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    const recipes = data.hits.map((hit) => ({
+                        title: hit.recipe.label,
+                        url: hit.recipe.url,
+                        image: hit.recipe.image,
+                        ingredients: hit.recipe.ingredientLines, // Adding ingredients to the recipe data
+                    }));
+
+                    // Shuffle the recipes randomly
+                    const shuffledRecipes = shuffleArray(recipes);
+
+                    // Display the random recipes
+                    shuffledRecipes.forEach((recipe) => {
+                        const recipeBox = document.createElement('div');
+                        recipeBox.className = 'recipe-box';
+
+                        const image = document.createElement('img');
+                        image.className = 'recipe-image';
+                        image.src = recipe.image;
+                        image.alt = recipe.title;
+
+                        const name = document.createElement('div');
+                        name.className = 'recipe-name';
+                        name.textContent = recipe.title;
+
+                        const link = document.createElement('a');
+                        link.className = 'recipe-link';
+                        link.href = 'javascript:void(0);'; // JavaScript void function for handling click
+                        link.textContent = 'View Recipe';
+
+                        // Attach a click event to the recipe image to open the pop-up
+                        image.addEventListener('click', function() {
+                            openPopup(recipe);
+                        });
+
+                        recipeBox.appendChild(image);
+                        recipeBox.appendChild(name);
+                        recipeBox.appendChild(link);
+                        recipeList.appendChild(recipeBox);
+                    });
+                })
+                .catch((error) => {
+                    console.error('There was a problem with the fetch operation:', error);
+                });
+        }
+
+        // Function to open the pop-up with recipe details
+        function openPopup(recipe) {
+            const popupContainer = document.getElementById('popup-container');
+            const popupImage = document.querySelector('.popup-image');
+            const popupTitle = document.querySelector('.recipe-name-popup'); // Updated selector
+            const popupIngredientsList = document.getElementById('popup-ingredients-list');
+            const viewRecipeButton = document.getElementById('view-recipe-button');
+
+            // Set the recipe details in the pop-up
+            popupImage.src = recipe.image;
+            popupImage.alt = recipe.title;
+            popupTitle.textContent = recipe.title; // Updated content
+
+            // Clear previous ingredients
+            while (popupIngredientsList.firstChild) {
+                popupIngredientsList.removeChild(popupIngredientsList.firstChild);
+            }
+
+            // Add ingredients to the pop-up as bullet points
+            recipe.ingredients.forEach((ingredient) => {
+                const ingredientItem = document.createElement('li');
+                ingredientItem.textContent = ingredient;
+                popupIngredientsList.appendChild(ingredientItem);
+            });
+
+            // Set the "View Recipe" button's href attribute to the recipe URL
+            viewRecipeButton.href = recipe.url;
+
+            // Display the pop-up
+            popupContainer.style.display = 'block';
+
+            // Blur the background
+            const desktop = document.querySelector('.desktop');
+            desktop.style.filter = 'blur(5px)';
+        }
+
+        // Function to close the pop-up
+        function closePopup() {
+            const popupContainer = document.getElementById('popup-container');
+
+            // Hide the popup
+            popupContainer.style.display = 'none';
+
+            // Unblur the background
+            const desktop = document.querySelector('.desktop');
+            desktop.style.filter = 'none';
+        }
+
+        // Function to redirect to the homepage
+        function redirectToHomepage() {
+            window.location.href = 'index.html'; // Replace with the actual homepage URL
+        }
+
+        // Call the function to display random recipes when the page loads
+        window.onload = function() {
+            displayRandomRecipes();
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Meta tags, title, and CSS styles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecipeHub</title>
+    <link rel="icon" type="image/x-icon" href="logo.ico">
+    <!-- Add the Google Fonts link for Lemon font here -->
+    <link href="https://fonts.googleapis.com/css2?family=Lemon:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
+
+    <style>
+        /* Reset the margin and padding of the body element */
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            /* Hide horizontal overflow */
+        }
+        /* Common styles for both desktop and mobile */
+        
+        body,
+        .desktop {
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 115vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #ffffff;
+            font-family: 'Lemon', sans-serif;
+        }
+        
+        .group {
+            bottom: 60%;
+            /* Place it at the top of the screen */
+            left: 50%;
+            /* Center it horizontally */
+            height: auto;
+            max-width: 80%;
+        }
+        
+        .text-wrapper {
+            color: #FFF;
+            text-align: center;
+            font-family: "Lemon", sans-serif;
+            font-size: 50px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            margin-top: 25px;
+            margin-bottom: 5%;
+            white-space: nowrap;
+            max-width: 100%;
+            position: relative;
+            /* Make it relative to allow space for .group */
+        }
+        /* Common styles for search bar and button */
+        
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .search-input {
+            font-size: 24px;
+            /* Reduce font size for mobile */
+            font-family: "Comic Sans MS", sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            margin-right: 10px;
+            /* Add margin to separate input and button */
+        }
+        
+        .search-button {
+            font-size: 24px;
+            /* Reduce font size for mobile */
+            font-family: "Comic Sans MS", sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            background-color: #F40058;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .search-button:hover {
+            background-color: #AE03FF;
+        }
+        
+        .suggest-recipes-link {
+            text-decoration: none;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 24px;
+            /* Reduce font size for mobile */
+            font-family: "Comic Sans MS", sans-serif;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+            display: inline-block;
+            background-color: #F40058;
+            border-radius: 10px;
+            padding: 10px 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .suggest-recipes-link:hover {
+            background-color: #AE03FF;
+        }
+        /* Add styles for the footer */
+        
+        .footer {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.50);
+            /* Set font color with opacity */
+            font-family: 'Montserrat', sans-serif;
+            /* Use Montserrat font */
+            font-size: small;
+            text-align: center;
+            padding: 10px;
+        }
+        /* Media query for screens with a maximum width of 768px (typical mobile devices) */
+        
+        @media (max-width: 768px) {
+            .search-bar {
+                margin-left: 10px;
+                flex-direction: column;
+                /* Change to vertical layout for mobile */
+                align-items: center;
+                /* Align items to the start of the container */
+            }
+            .search-button {
+                margin-top: 10px;
+                /* Add margin to the search button for spacing */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HTML Content Here -->
+    <div class="desktop">
+        <img class="group" alt="Group1" src="logo.png" />
+        <div class="text-wrapper">RecipeHub</div>
+        <form class="search-bar" onsubmit="performSearch(); return false;">
+            <input class="search-input" type="text" placeholder="Search for recipes" id="searchInput" />
+            <button class="search-button" onclick="performSearch()">Search</button>
+        </form>
+        <div class="overlap-group-wrapper">
+            <a href="random-recipes.html" class="suggest-recipes-link">Suggest Recipes</a>
+        </div>
+    </div>
+    <!-- Footer Section -->
+    <div class="footer">
+        &copy; <span id="currentYear"></span> RecipeHub | Harisankar M | All Rights Reserved
+    </div>
+
+    <!-- Add this script element inside the <head> of your HTML document -->
+    <script>
+        // JavaScript code to update the current year dynamically
+        document.getElementById("currentYear").innerText = new Date().getFullYear();
+
+        function performSearch() {
+            // Replace 'YOUR_APP_ID' and 'YOUR_APP_KEY' with your actual Edamam API credentials
+            const appId = '6d07bcac';
+            const appKey = '2af7e7e87610a515dba26a484c02cc07';
+
+            // Get the search input value
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value;
+
+            // Build the API URL
+            const apiUrl = `https://api.edamam.com/search?q=${query}&app_id=${appId}&app_key=${appKey}`;
+
+            // Redirect to the search results page with the query as a URL parameter
+            window.location.href = `search-results.html?q=${query}`;
+        }
+    </script>
+</body>
+
+</html>
